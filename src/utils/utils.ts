@@ -117,7 +117,7 @@ export function getElementData<T extends Record<string, unknown>>(el: HTMLElemen
  */
 export function isPlainObject(obj: unknown): obj is object {
     const prototype = Object.getPrototypeOf(obj);
-    return  prototype === Object.getPrototypeOf({}) ||
+    return prototype === Object.getPrototypeOf({}) ||
         prototype === null;
 }
 
@@ -126,34 +126,59 @@ export function isBoolean(v: unknown): v is boolean {
 }
 
 /**
- * Фабрика DOM-элементов в простейшей реализации
- * здесь не учтено много факторов
- * в интернет можно найти более полные реализации
- */
-export function createElement<
-    T extends HTMLElement
-    >(
-    tagName: keyof HTMLElementTagNameMap,
-    props?: Partial<Record<keyof T, string | boolean | object>>,
-    children?: HTMLElement | HTMLElement []
-): T {
-    const element = document.createElement(tagName) as T;
+ * Фабрика DOM-элементов (упрощённая).
+*/
+export function createElement<K extends keyof HTMLElementTagNameMap>(
+    tagName: K,
+    props?: Partial<HTMLElementTagNameMap[K]> & {
+        attrs?: Record<string, string>;
+        dataset?: Record<string, string>;
+    },
+    children?: HTMLElement | HTMLElement[]
+): HTMLElementTagNameMap[K] {
+    const element = document.createElement(tagName) as HTMLElementTagNameMap[K];
+
     if (props) {
-        for (const key in props) {
-            const value = props[key];
-            if (isPlainObject(value) && key === 'dataset') {
-                setElementData(element, value);
-            } else {
-                // @ts-expect-error fix indexing later
-                element[key] = isBoolean(value) ? value : String(value);
+        if (props.dataset) {
+            setElementData(element, props.dataset);
+        }
+
+        if (props.attrs) {
+            for (const [name, value] of Object.entries(props.attrs)) {
+                element.setAttribute(name, value);
             }
         }
+
+        for (const key in props) {
+            if (!Object.prototype.hasOwnProperty.call(props, key)) {
+                continue;
+            }
+
+            if (key === 'dataset' || key === 'attrs') {
+                continue;
+            }
+
+            const value = (props as any)[key];
+
+            if (value === undefined || value === null) {
+                continue;
+            }
+
+            if (typeof key === 'string' && (key.startsWith('aria-') || key.startsWith('data-') || key.includes('-'))) {
+                element.setAttribute(key, String(value));
+                continue;
+            }
+
+            (element as any)[key] = isBoolean(value) ? value : value;
+        }
     }
+
     if (children) {
         for (const child of Array.isArray(children) ? children : [children]) {
             element.append(child);
         }
     }
+
     return element;
 }
 
@@ -172,17 +197,21 @@ export function makeObservable<T extends object>(obj: T, callback: Callback<T>):
             if (value && typeof value === 'object') {
                 return makeObservable(value, (nestedKey, nestedValue) => {
                     const fullPath = `${key}.${nestedKey}`;
+
                     callback(fullPath, nestedValue);
                 });
             }
 
             return value;
         },
+
         set(target: T, key: string, value: unknown, receiver: T): boolean {
             let success = Reflect.set(target, key, value, receiver);
+
             if (success) {
                 callback(key, value);
             }
+
             return success;
         },
     });

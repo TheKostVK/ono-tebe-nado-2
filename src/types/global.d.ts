@@ -29,3 +29,8 @@ type Ticket = {
 type OrderedTicket = Ticket & {
     id: string
 };
+
+declare module '*.svg' {
+    const src: string;
+    export default src;
+}

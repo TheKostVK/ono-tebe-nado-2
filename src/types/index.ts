@@ -1,3 +1,6 @@
+import {Component} from "../components/base/Component";
+import {IItem} from "../components/item";
+
 export type LotStatus = 'wait' | 'active' | 'closed';
 
 export interface IAuction {
