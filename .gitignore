@@ -1,7 +1,6 @@
 /tmp
 /out-tsc
 
-.idea
 /dist/
 .env
 
@@ -13,3 +12,4 @@ yarn-error.log*
 .pnp.js
 
 .vscode/*
+/.idea/
