@@ -127,7 +127,7 @@ export function isBoolean(v: unknown): v is boolean {
 
 /**
  * Фабрика DOM-элементов (упрощённая).
-*/
+ */
 export function createElement<K extends keyof HTMLElementTagNameMap>(
     tagName: K,
     props?: Partial<HTMLElementTagNameMap[K]> & {
@@ -215,4 +215,22 @@ export function makeObservable<T extends object>(obj: T, callback: Callback<T>):
             return success;
         },
     });
+}
+
+/**
+ * Плавно прокручивает страницу к элементу
+ * @param elementId id элемента (без #)
+ * @param options настройки прокрутки
+ */
+export function scrollToElement(
+    elementId: string,
+    options: ScrollIntoViewOptions = {behavior: 'smooth', block: 'start'}
+): void {
+    const element = ensureElement(elementId);
+
+    if (!element) {
+        throw new Error(`Element with id "${elementId}" not found`);
+    }
+
+    element.scrollIntoView(options);
 }

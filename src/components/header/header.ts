@@ -51,6 +51,10 @@ export class HeaderItemView extends Component<HeaderItem> {
             el.append(...childrenNodes);
         }
 
+        if (data.callbackData) {
+            el.addEventListener(data.callbackData.callbackType, data.callbackData.callbackFn);
+        }
+
         this.container.replaceChildren(el);
 
         return this.container;
