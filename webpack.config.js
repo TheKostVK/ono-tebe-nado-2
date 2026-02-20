@@ -25,12 +25,23 @@ const config = {
     devServer: {
         open: true,
         host: "localhost",
+        static: [
+            {
+                directory: path.resolve(__dirname, "src/public"),
+                publicPath: "/",
+            },
+            {
+                directory: path.resolve(__dirname, "src/images"),
+                publicPath: "/content",
+            },
+        ],
         watchFiles: ["src/pages/*.html"],
         hot: true
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "src/pages/index.html"
+            template: "src/pages/index.html",
+            cache: false,
         }),
 
         new MiniCssExtractPlugin(),
@@ -66,7 +77,7 @@ const config = {
                 use: [stylesHandler, "css-loader", "postcss-loader"],
             },
             {
-                test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif)$/i,
+                test: /\.(eot|ttf|woff|woff2)$/i,
                 type: "asset",
             },
             {

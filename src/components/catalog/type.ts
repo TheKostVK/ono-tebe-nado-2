@@ -1,5 +1,6 @@
-import {IItem} from "../item";
+import {ILot} from "../../types";
 
 export interface ICatalog {
-    items: IItem[];
+    items: ILot[];
+    loading: HTMLElement;
 }

@@ -1,16 +1,44 @@
 import {Component} from "../base/Component";
 import {HeaderItem, IHeader, IHeaderItemConstructor} from "./type";
-import {createElement, ensureElement} from "../../utils/utils";
+import {createElement, ensureElement, scrollToElement} from "../../utils/utils";
 
 import {Model} from "../base/Model";
+import {IEvents} from "../base/events";
 
 export class Header extends Model<IHeader> implements IHeader {
     items: HeaderItem[];
+
+    constructor(data: Partial<IHeader>, protected events: IEvents) {
+        super(data, events);
+
+        this.items.push({
+            type: 'button',
+            className: 'header__basket',
+            children: [
+                {
+                    type: 'span',
+                    className: 'header__basket-counter',
+                    textContent: '0',
+                    dataset: {
+                        element: 'basket',
+                        component: 'basket',
+                    },
+                    callbackData: {
+                        callbackType: "click",
+                        callbackFn: (evt) => {
+                            evt.preventDefault();
+                            this.emitChanges('basket:open');
+                        },
+                    }
+                },
+            ],
+        },)
+    }
 }
 
 export class HeaderItemView extends Component<HeaderItem> {
-    constructor() {
-        super(createElement('span', {className: ''}));
+    constructor(events: IEvents) {
+        super(createElement('span', {className: ''}), events);
     }
 
     render(data?: Partial<HeaderItem>): HTMLElement {
@@ -43,7 +71,7 @@ export class HeaderItemView extends Component<HeaderItem> {
 
         if (data.children?.length) {
             const childrenNodes = data.children.map((child) => {
-                const childView = new HeaderItemView();
+                const childView = new HeaderItemView(this.events);
 
                 return childView.render(child);
             });
@@ -65,8 +93,8 @@ export class HeaderView extends Component<IHeader> {
     private _headerContainer: HTMLElement;
     private HeaderItem: IHeaderItemConstructor;
 
-    constructor(root: HTMLElement, HeaderItem: IHeaderItemConstructor) {
-        super(root);
+    constructor(root: HTMLElement, events: IEvents, HeaderItem: IHeaderItemConstructor) {
+        super(root, events);
 
         this._headerContainer = ensureElement('.header__container', root);
 
@@ -76,7 +104,7 @@ export class HeaderView extends Component<IHeader> {
     set items(items: HeaderItem[]) {
         this._headerContainer.replaceChildren(
             ...items.map((item) => {
-                const headerItemView = new this.HeaderItem();
+                const headerItemView = new this.HeaderItem(this.events);
                 return headerItemView.render(item);
             })
         );

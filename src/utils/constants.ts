@@ -13,7 +13,7 @@ export const headerItems: HeaderItem[] = [
     {
         type: 'a',
         className: 'header__logo',
-        href: '/',
+        href: '#',
         children: [
             {
                 type: 'img',
@@ -30,7 +30,7 @@ export const headerItems: HeaderItem[] = [
         children: [
             {
                 type: 'a',
-                className: 'header__menu-item',
+                className: 'header__menu-lot',
                 href: '#',
                 textContent: 'Главная',
                 callbackData: {
@@ -43,20 +43,20 @@ export const headerItems: HeaderItem[] = [
             },
             {
                 type: 'a',
-                className: 'header__menu-item',
+                className: 'header__menu-lot',
                 href: '#',
                 textContent: 'Посмотреть лоты',
                 callbackData: {
                     callbackType: "click",
                     callbackFn: (evt) => {
                         evt.preventDefault();
-                        scrollToElement('.catalog')
+                        scrollToElement('.catalog');
                     },
                 }
             },
             {
                 type: 'a',
-                className: 'header__menu-item',
+                className: 'header__menu-lot',
                 href: '#',
                 textContent: 'Об аукционе',
                 callbackData: {
@@ -66,22 +66,6 @@ export const headerItems: HeaderItem[] = [
                         scrollToElement('.about');
                     },
                 }
-            },
-        ],
-    },
-
-    {
-        type: 'button',
-        className: 'header__basket',
-        children: [
-            {
-                type: 'span',
-                className: 'header__basket-counter',
-                textContent: '0',
-                dataset: {
-                    element: 'basket',
-                    component: 'basket',
-                },
             },
         ],
     },

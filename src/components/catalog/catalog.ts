@@ -1,12 +1,15 @@
 import {Model} from "../base/Model";
-import {IItem, IItemConstructor} from "../item";
+import {ILotConstructor} from "../lot";
 import {Component} from "../base/Component";
 import {ICatalog} from "./type";
+import {IEvents} from "../base/events";
+import {ILot} from "../../types";
 
 export class Catalog extends Model<ICatalog> implements ICatalog {
-    items: IItem[];
+    items: ILot[];
+    loading: HTMLElement;
 
-    setItems(items: IItem[]) {
+    setItems(items: ILot[]) {
         this.items = items;
         this.emitChanges('catalog.items:changed', {
             items: this.items
@@ -15,17 +18,23 @@ export class Catalog extends Model<ICatalog> implements ICatalog {
 }
 
 export class CatalogView extends Component<ICatalog> {
-    protected Item: IItemConstructor;
+    protected Item: ILotConstructor;
+    protected loading: HTMLElement;
 
-    constructor(root: HTMLElement, Item: IItemConstructor) {
-        super(root);
+    constructor(root: HTMLElement, events: IEvents, Item: ILotConstructor, loading: HTMLElement) {
+        super(root, events);
         this.Item = Item;
+        this.loading = loading;
     }
 
-    set items(items: IItem[]) {
+    set items(items: ILot[]) {
         this.container.replaceChildren(...items.map((item) => {
-            const itemView = new this.Item();
+            const itemView = new this.Item(this.events);
             return itemView.render(item);
         }));
+    }
+
+    renderLoading() {
+        this.container.replaceChildren(this.loading);
     }
 }

@@ -11,7 +11,7 @@ export class Modal extends Component<IModalData> {
     protected _content: HTMLElement;
 
     constructor(container: HTMLElement, protected events: IEvents) {
-        super(container);
+        super(container, events);
 
         this._closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
         this._content = ensureElement<HTMLElement>('.modal__content', container);
@@ -28,12 +28,14 @@ export class Modal extends Component<IModalData> {
     open() {
         this.container.classList.add('modal_active');
         this.events.emit('modal:open');
+        document.body.style.overflow = 'hidden';
     }
 
     close() {
         this.container.classList.remove('modal_active');
         this.content = null;
         this.events.emit('modal:close');
+        document.body.style.overflow = '';
     }
 
     render(data: IModalData): HTMLElement {

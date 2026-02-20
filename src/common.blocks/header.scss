@@ -23,6 +23,14 @@
   &__menu {
     display: flex;
     gap: 4rem;
+
+    &-lot {
+      color: $secondary;
+      text-decoration: none;
+      &:hover {
+        color: $hover;
+      }
+    }
   }
 
   &__menu-item {

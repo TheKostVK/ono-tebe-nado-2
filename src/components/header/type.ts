@@ -1,4 +1,5 @@
 import {Component} from "../base/Component";
+import {IEvents} from "../base/events";
 
 /** Разрешённые теги хедера */
 export type HeaderTag = 'a' | 'button' | 'img' | 'nav' | 'span';
@@ -73,5 +74,5 @@ export interface IHeader {
 }
 
 export interface IHeaderItemConstructor {
-    new (): Component<HeaderItem>;
+    new (events: IEvents): Component<HeaderItem>;
 }
