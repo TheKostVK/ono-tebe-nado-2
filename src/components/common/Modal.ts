@@ -33,7 +33,7 @@ export class Modal extends Component<IModalData> {
 
     close() {
         this.container.classList.remove('modal_active');
-        this.content = null;
+        this._content.replaceChildren();
         this.events.emit('modal:close');
         document.body.style.overflow = '';
     }

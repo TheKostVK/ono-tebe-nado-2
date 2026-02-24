@@ -8,12 +8,20 @@ import {ILot} from "../../types";
 export class Catalog extends Model<ICatalog> implements ICatalog {
     items: ILot[];
     loading: HTMLElement;
+    eventKey: string;
+
+    constructor(data: ICatalog, eventKey: string, events: IEvents) {
+        super(data, events);
+        this.items = data.items;
+        this.loading = data.loading;
+        this.eventKey = eventKey;
+    }
 
     setItems(items: ILot[]) {
         this.items = items;
-        this.emitChanges('catalog.items:changed', {
+        this.emitChanges(this.eventKey, {
             items: this.items
-        })
+        });
     }
 }
 

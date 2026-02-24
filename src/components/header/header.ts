@@ -23,15 +23,15 @@ export class Header extends Model<IHeader> implements IHeader {
                         element: 'basket',
                         component: 'basket',
                     },
-                    callbackData: {
-                        callbackType: "click",
-                        callbackFn: (evt) => {
-                            evt.preventDefault();
-                            this.emitChanges('basket:open');
-                        },
-                    }
                 },
             ],
+            callbackData: {
+                callbackType: "click",
+                callbackFn: (evt) => {
+                    evt.preventDefault();
+                    this.emitChanges('basket:open');
+                },
+            }
         },)
     }
 }

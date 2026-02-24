@@ -10,7 +10,23 @@
 
     &:hover {
       color: white;
-      background-color: $secondaryBackground!important;
+      background-color: $secondaryHover!important;
+      border-color: $secondaryHover;
+    }
+
+    &:disabled {
+      opacity: 1;
+      cursor: pointer;
+    }
+  }
+
+  &_active {
+    color: white;
+    background-color: $secondaryBackground!important;
+
+    &:hover {
+      color: white;
+      background-color: $secondaryHover!important;
     }
 
     &:disabled {

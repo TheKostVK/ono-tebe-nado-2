@@ -181,6 +181,8 @@ export class lotModalView extends Component<ILot> {
     private updateStatusText(value: Status) {
         const elDate = ensureElement('.lot__status-timer', this.container);
         const elDesc = ensureElement('.lot__status-text', this.container);
+        const elForm = ensureElement('.lot__bid', this.container) as HTMLFormElement;
+
         const date = this._datetime;
 
         let textDate = 'Дата не указана';
@@ -190,6 +192,7 @@ export class lotModalView extends Component<ILot> {
             case 'wait':
                 textDate = date ? this.formatCountdown(date) : 'Дата не указана';
                 textDesc = 'До начала аукциона';
+                this.setHidden(elForm);
                 break;
             case 'active':
                 textDate = date ? this.formatCountdown(date) : 'Дата не указана';
@@ -198,6 +201,7 @@ export class lotModalView extends Component<ILot> {
             case 'closed':
                 textDate = 'Аукцион завершён';
                 textDesc = `Продано за ${this.formatCurrency(this._price)}`;
+                this.setHidden(elForm);
                 break;
         }
 
@@ -329,7 +333,7 @@ export class lotModalView extends Component<ILot> {
             elHistory.append(elHistoryTitle, bids);
         }
 
-        if (this._status === 'closed') {
+        if (this._status === 'closed' || this._status === 'wait') {
             this.setHidden(elForm);
             return;
         } else {
@@ -385,5 +389,119 @@ export class lotModalView extends Component<ILot> {
         }
 
         return new Intl.NumberFormat('ru-RU', options).format(value);
+    }
+}
+
+export class lotBasketView extends Component<ILot> {
+    private _id = '';
+    private _title: string;
+    private _image: string;
+    private _status: Status;
+    private _datetime: Date;
+
+    constructor(events: IEvents) {
+        const template = cloneTemplate('#bid');
+        const btn = ensureElement('.bid__open', template);
+
+        btn.addEventListener('click', () => {
+            this.events.emit('catalog.items:click', {
+                id: this._id
+            });
+        });
+
+        super(template, events);
+    }
+
+    set id(value: string) {
+        this._id = value;
+    }
+
+    set datetime(value: Date | string) {
+        this._datetime = this.parseDate(value);
+    }
+
+    /**
+     * Строгий парсер даты.
+     * Принимает только:
+     * - Date
+     * - string (ожидается ISO или другой формат, корректно парсящийся new Date(...))
+     *
+     * Возвращает:
+     * - Date, если дата валидна
+     * - null, если дата отсутствует или невалидна
+     */
+    private parseDate(value: Date | string | null | undefined): Date | null {
+        if (value == null) return null;
+
+        if (value instanceof Date) {
+            return Number.isNaN(value.getTime()) ? null : value;
+        }
+
+        const s = value.trim();
+        if (!s) return null;
+
+        const d = new Date(s);
+        return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    set title(value: string) {
+        this.setText(ensureElement('.bid__title', this.container), value);
+        this._title = value;
+    }
+
+    set price(value: number) {
+        this.setText(ensureElement('.bid__amount', this.container), this.formatAmount(value));
+    }
+
+    set image(value: string) {
+        this.setImage(
+            ensureElement('.bid__image', this.container) as HTMLImageElement,
+            value,
+            this._title
+        );
+
+        this._image = value;
+    }
+
+    private formatAmount(value: number): string {
+        return new Intl.NumberFormat('ru-RU', {
+            style: 'decimal',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(value);
+    }
+}
+
+export class lotSoldBasketView extends Component<ILot> {
+    private _title: string;
+
+    constructor(events: IEvents) {
+        const template = cloneTemplate('#sold');
+        super(template, events);
+    }
+
+    set title(value: string) {
+        this.setText(ensureElement('.bid__title', this.container), value);
+        this._title = value;
+    }
+
+    set image(value: string) {
+        this.setImage(
+            ensureElement('.bid__image', this.container) as HTMLImageElement,
+            value,
+            this._title
+        );
+    }
+
+    set price(value: number) {
+        this.setText(ensureElement('.bid__amount', this.container), this.formatAmount(value));
+    }
+
+    private formatAmount(value: number): string {
+        return new Intl.NumberFormat('ru-RU', {
+            style: 'decimal',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(value);
     }
 }

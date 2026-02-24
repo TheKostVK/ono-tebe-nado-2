@@ -10,7 +10,9 @@ require('dotenv').config({
     path: path.join(process.cwd(), process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env')
 });
 
-const isProduction = process.env.NODE_ENV == "production";
+const isProduction = process.env.NODE_ENV === "production" || process.argv.includes("--mode=production");
+const repoName = "ono-tebe-nado-2";
+const publicPath = isProduction ? `/${repoName}/` : "/";
 
 const stylesHandler = MiniCssExtractPlugin.loader;
 
@@ -19,7 +21,7 @@ const config = {
     devtool: "source-map",
     output: {
         path: path.resolve(__dirname, 'dist'),
-        publicPath: '/',
+        publicPath,
         clean: true,
     },
     devServer: {
@@ -50,7 +52,8 @@ const config = {
         // Learn more about plugins from https://webpack.js.org/configuration/plugins/
         new DefinePlugin({
             'process.env.DEVELOPMENT': !isProduction,
-            'process.env.API_ORIGIN': JSON.stringify(process.env.API_ORIGIN ?? 'https://onotebenado-api.nomoreparties.co')
+            'process.env.API_ORIGIN': JSON.stringify(process.env.API_ORIGIN ?? 'https://onotebenado-api.nomoreparties.co'),
+            'process.env.PUBLIC_PATH': JSON.stringify(publicPath)
         })
     ],
     module: {
@@ -81,7 +84,7 @@ const config = {
                 type: "asset",
             },
             {
-                test: /\.(png|jpe?g|gif|svg|webp)$/i,
+                test: /\.(png|jpe?g|gif|svg|webp|ico)$/i,
                 type: 'asset/resource',
                 generator: {
                     filename: 'content/[name][ext]',

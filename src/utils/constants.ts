@@ -5,7 +5,8 @@ import {scrollToElement} from "./utils";
 
 export const API_URL = `${process.env.API_ORIGIN}/api/onotebenado`;
 export const CDN_URL = `${process.env.API_ORIGIN}/content/onotebenado`;
-export const CDN_URL_LOC = `/content`;
+const APP_PUBLIC_PATH = (process.env.PUBLIC_PATH ?? '/').replace(/\/$/, '');
+export const CDN_URL_LOC = `${APP_PUBLIC_PATH}/content`;
 
 export const settings = {};
 
